@@ -18,7 +18,7 @@ In the near future I will be working on the following:
 ## Installation
 1. Open the package manager window.
 2. Click the plus button and select "Add package from git URL...".
-3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#0.1.0`.
+3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.1.0`.
 
 ### Prepare sheets
 1. Create a Google Sheets project and set it **public to read**.
