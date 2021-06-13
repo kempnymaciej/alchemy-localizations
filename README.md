@@ -21,11 +21,12 @@ In the near future I will be working on the following:
 
 ## Quick start
 1. Create a Google sheets project and set it public to read.
-2. Create sheets and name it e.g. `General`.
+2. Create sheets and name them e.g. `General`, `UI`, `Tips`, ...
 3. Fill sheets like this (languages in the first row and keys in the first column):
-| | English | Polish |
-| GoodNight | Good night! | Dobranoc! |
-| TimeToSleep | It's time to sleep. | Czas spać. |
+| Keys          | English               | Polish    |
+| ---           | ---                   | ---       |
+| GoodNight     | Good night!           | Dobranoc! |
+| TimeToSleep   | It's time to sleep.   | Czas spać.|
 4. In the Unity, click Window/AlchemyBow/Localizations/Settings.
 5. Click the button in the window to create a localization folder.
 6. Fill all required fields and click the "Synchronize Localization" button.
