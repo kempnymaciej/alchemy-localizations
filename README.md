@@ -20,6 +20,8 @@ In the near future I will be working on the following:
 2. Click the plus button and select "Add package from git URL...".
 3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.1.0`.
 
+Some versions of Unity may have trouble downloading the git package with a specific tag ([see](https://issuetracker.unity3d.com/issues/package-resolution-error-when-using-a-git-dependency-referencing-an-annotated-tag-in-its-git-url)). In this case, clone the repository and copy the contents of the package directory to your project.
+
 ### Prepare sheets
 1. Create a Google Sheets project and set it **public to read**.
 2. Create sheets and name them. For example: `General`, `Tips`, ...
