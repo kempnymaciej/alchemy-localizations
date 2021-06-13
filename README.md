@@ -63,6 +63,7 @@ private void Start()
 {
     localizator = new Localizator(Keys.GetLocalizatorConfig());
     localizator.ValidLocalizationsSet += OnLanguageSet;
+    localizator.SetLanguage(LocalizatorConfig.DefaultLanguage);
 }
 private void OnLanguageSet(Localizator localizator)
 {
