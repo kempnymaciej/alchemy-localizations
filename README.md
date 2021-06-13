@@ -32,14 +32,18 @@ In the near future I will be working on the following:
 4. In the Unity, click Window/AlchemyBow/Localizations/Settings.
 5. Click the button in the window to create a localization folder.
 6. Fill all required fields:
- * **SpreadsheedId** - You can find the spreadsheet ID in a sheets URL: https://docs.google.com/spreadsheets/d/**SpreadsheedId**/edit#gid=0
- * **Class Name** - The name of the class to bake.
- * **Class Namespace Name** - The namespace of the class to bake.
- * **Class Folder Path** - The path to the class folder. (Ensure the folder is in range of an assembly that referenses `AlchemyBow.Localizations`!)
- * **Languages** - Languages you used in the sheets.
- * **Group Names** - Names of the sheets you created.
+
+| Field                     | Description|
+| :---:                     | :--- |
+|**SpreadsheedId**          | You can find the spreadsheet ID in a sheets URL: `https://docs.google.com/spreadsheets/d/<SpreadsheedId>/edit#gid=0` |
+|**Class Name**             | The name of the class to bake. |
+|**Class Namespace Name**   | The namespace of the class to bake. |
+|**Class Folder Path**      | The path to the class folder. (Ensure the folder is in range of an assembly that referenses `AlchemyBow.Localizations`!) |
+|**Languages**              | Languages you used in the sheets. |
+|**Group Names**            | Names of the sheets you created. |
+
 7. Click the "Synchronize Localization" button.
-8. Initialize a Localizator:
+8. Initialize a Localizator in runtime scripts:
 ```csharp
 //Coroutine example:
 private IEnumerator LoadLocalizator()
