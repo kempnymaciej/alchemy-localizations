@@ -4,7 +4,7 @@ AlchemyLocalizations is a personal project that implements a localizations syste
 ## Key features:
 * Google sheets synchronizations.
 * Supports all special characters including end lines.
-* Advanced access logic with static keys.
+* Advanced access logic with constant keys.
 * Simple configuration with a dedicated editor window.
 * Loading based on the `Addressables` package.
 
@@ -38,9 +38,9 @@ In the near future I will be working on the following:
 | Field                     | Description|
 | :---:                     | :--- |
 |**SpreadsheedId**          | You can find the spreadsheet ID in a sheets URL: `https://docs.google.com/spreadsheets/d/<SpreadsheedId>/edit#gid=0` |
-|**Class Name**             | The name of the class to bake. (By default Keys)|
-|**Class Namespace Name**   | The namespace of the class to bake. |
-|**Class Folder Path**      | The path to the class folder. (Ensure the folder is in range of an assembly that referenses `AlchemyBow.Localizations`!) |
+|**Class Name**             | The name of the access class to bake. (By default Keys)|
+|**Class Namespace Name**   | The namespace of the access class. |
+|**Class Folder Path**      | The path to the access class folder. **(Ensure the folder is in an assembly that references `AlchemyBow.Localizations`!)** |
 |**Languages**              | Languages you used in the sheets. |
 |**Group Names**            | Names of the sheets you created. |
 
@@ -52,7 +52,7 @@ In the near future I will be working on the following:
 //Coroutine example:
 private IEnumerator LoadLocalizator()
 {
-    localizator = new Localizator(YourAccessClassName.GetLocalizatorConfig());
+    localizator = new Localizator(Keys.GetLocalizatorConfig());
     var request = localizator.SetLanguage(LocalizatorConfig.DefaultLanguage);
     yield return new WaitUntil(() => request.Finished);
     // ...
