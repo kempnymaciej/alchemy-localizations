@@ -17,7 +17,7 @@ In the near future I will be working on the following:
 ## Installation via PackageManager
 1. Open the package manager window.
 2. Click the plus button and select "Add package from git URL...".
-3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.1.0`.
+3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.2.1`.
 
 Some versions of Unity may have trouble downloading the git package with a specific tag ([see](https://issuetracker.unity3d.com/issues/package-resolution-error-when-using-a-git-dependency-referencing-an-annotated-tag-in-its-git-url)). In this case, clone the repository and copy the contents of the package directory to your project.
 
