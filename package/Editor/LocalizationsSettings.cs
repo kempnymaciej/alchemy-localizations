@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,21 +7,22 @@ namespace AlchemyBow.Localizations.Editor
 {
     public class LocalizationsSettings : ScriptableObject
     {
-        public const string SettingsFolderName = "AlchemyLocalizationsData";
-        public const string SettingsFolderPath = "Assets/" + SettingsFolderName;
-        public const string SettingsFileName = "LocalizationsSettings.asset";
-        public const string SettingsFilePath = SettingsFolderPath + "/" + SettingsFileName;
-        public const string LocalisationsFileName = "localizations.txt";
-        public const string LocalisationsFilePath = SettingsFolderPath + "/" + LocalisationsFileName;
+        private const string SettingsFolderName = "AlchemyLocalizationsData";
+        private const string SettingsFileName = "LocalizationsSettings.asset";
+
+        private const string SettingsFolderPath = "Assets/" + SettingsFolderName;
+        private const string SettingsFilePath = SettingsFolderPath + "/" + SettingsFileName;
+
+        private const string LocalisationsFileName = "localizations.txt";
 
         [SerializeField]
-        private string spreadsheetId;
+        private string spreadsheetId = "";
         [SerializeField]
         private string className = "Keys";
         [SerializeField]
         private string classNamespaceName = "AlchemyBow.Localizations";
         [SerializeField]
-        private string classFolderPath = "";
+        private string classFolderPath = "Assets";
         [SerializeField]
         private string[] languages = null;
         [SerializeField]
@@ -30,27 +31,14 @@ namespace AlchemyBow.Localizations.Editor
         public string SpreadsheetId => spreadsheetId;
         public string ClassName => className;
         public string ClassNamespaceName => classNamespaceName;
-        public string AdaptiveAbsoluteClassPath 
-            => System.IO.Path.Combine(Application.dataPath, classFolderPath, className + ".cs");
+        public string ClassProjectRelativePath => Path.Combine(classFolderPath, className + ".cs");
+
         public IReadOnlyList<string> Languages => languages;
         public IReadOnlyList<string> GroupNames => groupNames;
 
-        public static bool CheckIfSettingsExist()
-        {
-            return GetSettings() != null;
-        }
         public static LocalizationsSettings GetSettings()
         {
             return AssetDatabase.LoadAssetAtPath<LocalizationsSettings>(SettingsFilePath);
-        }
-
-        public static void SelectSettingsObjectIfExist()
-        {
-            var settings = GetSettings();
-            if(settings != null)
-            {
-                Selection.activeObject = settings;
-            }
         }
 
         public static void CreateDefaultSettingsIfNotExist()
@@ -77,5 +65,31 @@ namespace AlchemyBow.Localizations.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
-    } 
+
+        public void SaveLocalizationsFile(string fileContent)
+        {
+            string folderPath = EnsureSettingsSubfoldersBranchIfNotExist("Resources", "AlchemyLocalizations");
+            File.WriteAllText(Path.Combine(folderPath, LocalisationsFileName), fileContent);
+            AssetDatabase.Refresh();
+        }
+
+        private string EnsureSettingsSubfoldersBranchIfNotExist(params string[] foldersBranch)
+        {
+            string folderPath = SettingsFolderPath;
+            if (foldersBranch != null)
+            {
+                for (int i = 0; i < foldersBranch.Length; i++)
+                {
+                    string parentFolderPath = folderPath;
+                    folderPath = Path.Combine(parentFolderPath, foldersBranch[i]);
+                    if (!AssetDatabase.IsValidFolder(folderPath))
+                    {
+                        AssetDatabase.CreateFolder(parentFolderPath, foldersBranch[i]);
+                    }
+                } 
+            }
+
+            return folderPath;
+        }
+    }
 }

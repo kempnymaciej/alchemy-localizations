@@ -4,8 +4,6 @@ using UnityEditor;
 using AlchemyBow.Localizations.CsvProcessing;
 using UnityEngine.Networking;
 using System.IO;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using AlchemyBow.Localizations.Editor.Utilities;
 
 namespace AlchemyBow.Localizations.Editor
@@ -40,12 +38,29 @@ namespace AlchemyBow.Localizations.Editor
         #region GUI
         public void OnGUI()
         {
-            serializedObject.Update();
             DrawFieldsGUI();
+            if (ValidateSettingsGUI())
+            {
+                if (GUILayout.Button("Synchronize Localizations"))
+                {
+                    try
+                    {
+                        Synchronize();
+                        Debug.Log("Localizations synchronization finished with result: Success.");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError(e.Message);
+                        Debug.Log("Localizations synchronization finished with result: Failed.");
+                    }
+                }
+            }
         }
 
         private void DrawFieldsGUI()
         {
+            serializedObject.Update();
+
             EditorGUILayout.LabelField("Localizatons Settings", EditorStyles.boldLabel);
             EditorGUILayout.Space(8);
             EditorGUILayout.PropertyField(spreadsheetIdProp);
@@ -59,27 +74,7 @@ namespace AlchemyBow.Localizations.Editor
             EditorGUILayout.PropertyField(groupNamesProp);
 
             serializedObject.ApplyModifiedProperties();
-
-            if (ValidateSettingsGUI())
-            {
-                if (GUILayout.Button("Synchronize Localizations"))
-                {
-                    if (DisplaySynchronizationConfirmation())
-                    {
-                        try
-                        {
-                            Synchronize();
-                            Debug.Log("Localizations synchronization was successful.");
-                        }
-                        catch (System.Exception e)
-                        {
-                            Debug.LogError(e.Message);
-                        }
-                    }
-                }
-            }
         }
-
         private void DrawSelectClassFolderPathGUI()
         {
             if (GUILayout.Button("Update Class Directory Path"))
@@ -95,11 +90,11 @@ namespace AlchemyBow.Localizations.Editor
                     directoryPath = directoryPath.Replace(Application.dataPath, "");
                     if (directoryPath.Length == 0)
                     {
-                        directoryPath = "";
+                        directoryPath = "Assets";
                     }
                     else
                     {
-                        directoryPath = directoryPath.Substring(1);
+                        directoryPath = "Assets" + directoryPath;
                     }
                     classFolderPathProp.stringValue = directoryPath;
                 }
@@ -113,11 +108,11 @@ namespace AlchemyBow.Localizations.Editor
         private bool ValidateSettingsGUI()
         {
             bool result = true;
-            result = result && ValidateClassNamespaceNameGUI();
-            result = result && ValidateClassNameGUI();
-            result = result && ValidateClassFolderPathGUI();
-            result = result && ValidateLanguagesGUI();
-            result = result && ValidateGroupsGUI();
+            result = ValidateClassNamespaceNameGUI() && result;
+            result = ValidateClassNameGUI() && result;
+            result = ValidateClassFolderPathGUI() && result;
+            result = ValidateLanguagesGUI() && result;
+            result = ValidateGroupsGUI() && result;
             return result;
         }
         private bool ValidateClassFolderPathGUI()
@@ -129,7 +124,7 @@ namespace AlchemyBow.Localizations.Editor
                 EditorGUILayout.HelpBox("The class folder path must be selected.", MessageType.Error);
                 isCorrent = false;
             }
-            else if (path.Length != 0 && !AssetDatabase.IsValidFolder("Assets/" + path))
+            else if (path.Length != 0 && !AssetDatabase.IsValidFolder(path))
             {
                 EditorGUILayout.HelpBox("The class folder path must point to valid directory", MessageType.Error);
                 isCorrent = false;
@@ -188,14 +183,6 @@ namespace AlchemyBow.Localizations.Editor
             }
             return isCorrect;
         }
-
-        private static bool DisplaySynchronizationConfirmation()
-        {
-            return EditorUtility.DisplayDialog(
-                "Confirm Synchronization",
-                "If the folders of 'Addressables' does not exist, it will be created during synchronization process. The localizations file will be added to the default addressables group.",
-                "Continue", "Cancel");
-        }
         #endregion
 
         #region Synchronization
@@ -240,14 +227,10 @@ namespace AlchemyBow.Localizations.Editor
                 }
             }
 
-            File.WriteAllText(LocalizationsSettings.LocalisationsFilePath, csvBuilder.ToString());
-            File.WriteAllText(settings.AdaptiveAbsoluteClassPath, fileBuilder.Build(settings, groups));
-
+            settings.SaveLocalizationsFile(csvBuilder.ToString());
+            File.WriteAllText(settings.ClassProjectRelativePath, fileBuilder.Build(settings, groups));
             AssetDatabase.Refresh();
-            UpdateAddressableFile();
-            OfferAddressablesBuild();
         }
-
 
 
         private static string[] LoadSheetsContent(LocalizationsSettings settings)
@@ -375,24 +358,6 @@ namespace AlchemyBow.Localizations.Editor
             if (!string.IsNullOrWhiteSpace(errorLog))
             {
                 throw new System.Exception($"Failed to decode the group '{groupName}' keys: \n{errorLog}");
-            }
-        }
-        
-        private static void UpdateAddressableFile()
-        {
-            var guid = AssetDatabase.AssetPathToGUID(LocalizationsSettings.LocalisationsFilePath);
-
-            if (AddressableAssetSettingsDefaultObject.Settings == null)
-                AddressableAssetSettingsDefaultObject.Settings = AddressableAssetSettings.Create(AddressableAssetSettingsDefaultObject.kDefaultConfigFolder, AddressableAssetSettingsDefaultObject.kDefaultConfigAssetName, true, true);
-            AddressableAssetSettingsDefaultObject.Settings.CreateOrMoveEntry(guid, AddressableAssetSettingsDefaultObject.Settings.DefaultGroup);
-        }
-
-        private static void OfferAddressablesBuild()
-        {
-            bool confirmation = EditorUtility.DisplayDialog("Confirm process", "For localizations to work you need to build addressable. You can skip this step and do it yourself later.", "Build Addressables Now", "Skip");
-            if (confirmation)
-            {
-                AddressableAssetSettings.BuildPlayerContent();
             }
         }
         #endregion

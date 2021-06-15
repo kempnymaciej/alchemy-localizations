@@ -14,7 +14,6 @@ namespace AlchemyBow.Localizations.Editor
         }
 
         private LocalizationsSettingsGUI settingsEditor;
-
         private Vector2 scrollPosition;
 
         private void OnEnable()
