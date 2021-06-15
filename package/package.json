@@ -1,6 +1,6 @@
 {
   "name": "com.alchemybow.alchemy-localizations",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "displayName": "AlchemyLocalizations",
   "description": "This package implements a localizations system.",
   "unity": "2018.4",
@@ -12,8 +12,5 @@
   "author": {
     "name": "Maciej Kempny",
     "url": "https://github.com/kempnymaciej"
-  },
-  "dependencies": {
-    "com.unity.addressables": "1.16.19"
   }
 }

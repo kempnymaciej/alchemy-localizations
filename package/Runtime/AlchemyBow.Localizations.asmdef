@@ -1,9 +1,7 @@
 {
     "name": "AlchemyBow.Localizations",
-    "references": [
-        "Unity.ResourceManager",
-        "Unity.Addressables"
-    ],
+    "rootNamespace": "",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

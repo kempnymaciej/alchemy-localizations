@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace AlchemyBow.Localizations
 {
@@ -13,7 +11,8 @@ namespace AlchemyBow.Localizations
     /// </summary>
     public sealed class LocalizatorRequest
     {
-        private const string LocalizationsFileAddress = "Assets/AlchemyLocalizationsData/localizations.txt";
+        private const string ResourcesFilePath = "AlchemyLocalizations/localizations";
+
         private readonly LocalizatorConfig config;
         private readonly string language;
         private readonly string[][] localizations;
@@ -30,34 +29,6 @@ namespace AlchemyBow.Localizations
             this.successfullyCompleded = successfullyCompleded;
         }
 
-        /// <summary>
-        /// Schedules the specified language to load asynchronously and returns a handle for the process.
-        /// </summary>
-        /// <param name="languageIndex">An index of the language to load.</param>
-        /// <param name="groups">Indexes of the groups to load.</param>
-        /// <param name="config">A configuration of the Localizator.</param>
-        /// <param name="localizations">A load destination</param>
-        /// <param name="successfullyCompleded">An action to invoke when the process is successfully completed.</param>
-        /// <returns>A handle for the loading process.</returns>
-        public static LocalizatorRequest RequestLocalizations(int languageIndex, HashSet<int> groups, 
-            LocalizatorConfig config, string[][] localizations, Action successfullyCompleded)
-        {
-            string language = config.SupportedLanguages[languageIndex];
-            var request = new LocalizatorRequest(config, language, groups, 
-                localizations, successfullyCompleded);
-            if (!config.IsLanguageSupported(language))
-            {
-                request.Success = false;
-                request.Finished = true;
-            }
-            else
-            {
-                Addressables.LoadAssetAsync<TextAsset>(LocalizationsFileAddress).Completed 
-                    += request.OnLocalizationsFileLoadDone;
-            }
-
-            return request;
-        }
 
         /// <summary>
         /// Determines whether the request processing is complete.
@@ -71,12 +42,41 @@ namespace AlchemyBow.Localizations
         /// <returns>true if the request processing was successfully processed; otherwise, false.</returns>
         public bool Success { get; private set; }
 
-        private void OnLocalizationsFileLoadDone(AsyncOperationHandle<TextAsset> handle)
+        /// <summary>
+        /// Schedules the specified language to load asynchronously and returns a handle for the process.
+        /// </summary>
+        /// <param name="languageIndex">An index of the language to load.</param>
+        /// <param name="groups">Indexes of the groups to load.</param>
+        /// <param name="config">A configuration of the Localizator.</param>
+        /// <param name="localizations">A load destination</param>
+        /// <param name="successfullyCompleded">An action to invoke when the process is successfully completed.</param>
+        /// <returns>A handle for the loading process.</returns>
+        public static LocalizatorRequest RequestLocalizations(int languageIndex, HashSet<int> groups, 
+            LocalizatorConfig config, string[][] localizations, Action successfullyCompleded)
         {
-            if (handle.Status == AsyncOperationStatus.Succeeded)
+            string language = config.SupportedLanguages[languageIndex];
+            var request = new LocalizatorRequest(config, language, groups, localizations, successfullyCompleded);
+            if (!config.IsLanguageSupported(language))
             {
-                var localizationsFileContent = handle.Result.text;
-                Addressables.Release(handle);
+                request.Success = false;
+                request.Finished = true;
+            }
+            else
+            {
+                var resourceRequest = Resources.LoadAsync<TextAsset>(ResourcesFilePath);
+                resourceRequest.completed += (a) => request.OnResourcesLoadDone(resourceRequest.asset);
+            }
+
+            return request;
+        }
+
+        private void OnResourcesLoadDone(UnityEngine.Object asset)
+        {
+            if (asset != null)
+            {
+                var textAsset = asset as TextAsset;
+                var localizationsFileContent = textAsset.text;
+                Resources.UnloadAsset(asset);
                 LoadLanguage(localizationsFileContent);
 
                 Success = true;
@@ -128,5 +128,5 @@ namespace AlchemyBow.Localizations
                 }
             }
         }
-    } 
+    }
 }

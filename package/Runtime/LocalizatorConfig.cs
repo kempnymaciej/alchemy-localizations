@@ -32,13 +32,13 @@ namespace AlchemyBow.Localizations
         }
 
         /// <summary>
-        /// A list of supported languages.
+        /// Gets a list of supported languages.
         /// </summary>
         /// <returns>A list of supported languages.</returns>
         public IReadOnlyList<string> SupportedLanguages => languages;
 
         /// <summary>
-        /// A number of groups.
+        /// Gets a number of groups.
         /// </summary>
         /// <returns>A number of groups.</returns>
         public int NumberOfGroups => numberOfGroups;
@@ -134,7 +134,7 @@ namespace AlchemyBow.Localizations
                     return i + 1;
                 }
             }
-            return 0; //returns the index of the key column if a language is not supported
+            return 0;
         }
     } 
 }

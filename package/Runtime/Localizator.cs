@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace AlchemyBow.Localizations
 {
     /// <summary>
-    /// Localizations access unit..
+    /// Localizations access unit.
     /// </summary>
     public sealed class Localizator
     {
@@ -39,7 +39,7 @@ namespace AlchemyBow.Localizations
         /// <summary>
         /// The index of the currently used language.
         /// </summary>
-        /// <returns>The index of the supported language if it is loaded; otherwise, -1.</returns>
+        /// <returns>The index of the active language if it is loaded; otherwise, -1.</returns>
         public int ActiveLanguage 
         { 
             get => activeLanguage; 

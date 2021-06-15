@@ -1,8 +1,8 @@
 {
     "name": "AlchemyBow.Localizations.Editor",
+    "rootNamespace": "",
     "references": [
-        "AlchemyBow.Localizations",
-        "Unity.Addressables.Editor"
+        "AlchemyBow.Localizations"
     ],
     "includePlatforms": [
         "Editor"
