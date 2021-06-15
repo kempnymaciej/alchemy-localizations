@@ -6,16 +6,15 @@ AlchemyLocalizations is a personal project that implements a localizations syste
 * Supports all special characters including end lines.
 * Advanced access logic with constant keys.
 * Simple configuration with a dedicated editor window.
-* Loading based on the `Addressables` package.
 
-## Early beta NOTE!
+#### Early beta NOTE!
 The AlchemyLocalizations package is currently in an early beta stage. It is functional, but sometimes it may not work as intended and may be missing some features.
 In the near future I will be working on the following:
 * Documentation and tutorials.
 * Tests for different types of players (especially Android).
 * Better validation.
 
-## Installation
+## Installation via PackageManager
 1. Open the package manager window.
 2. Click the plus button and select "Add package from git URL...".
 3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.1.0`.
@@ -23,9 +22,9 @@ In the near future I will be working on the following:
 Some versions of Unity may have trouble downloading the git package with a specific tag ([see](https://issuetracker.unity3d.com/issues/package-resolution-error-when-using-a-git-dependency-referencing-an-annotated-tag-in-its-git-url)). In this case, clone the repository and copy the contents of the package directory to your project.
 
 ### Prepare sheets
-1. Create a Google Sheets project and set it **public to read**.
-2. Create sheets and name them. For example: `General`, `Tips`, ...
-3. Fill sheets like this (languages in the first row and keys in the first column):
+1. Create a Google Sheets project, name it and set it **public to read**.
+2. Create and name sheets. For example: `General`, `Tips`, ...
+3. Fill sheets like this (languages in the first row; keys in the first column):
 
 | Keys          | English         | Polish       |
 | :---:         | :---:           | :---:        |
@@ -59,7 +58,8 @@ private IEnumerator LoadLocalizator()
     yield return new WaitUntil(() => request.Finished);
     // ...
 }
-
+```
+```csharp
 //Callback example:
 private void Start()
 {
@@ -102,4 +102,4 @@ Debug.Log(localizator[Keys.General.MessageX(99)]);
 ```
 
 ## No serialization motivation
-The system is intended to be used only with code. Any attempt to serialize key values of can lead to later missmaches. I developed it this way because I find it very error-proof and convinient to use in the way I develop my project. I hope you like it too. 
+The system is intended to be used only with code. Any attempt to serialize key values of can lead to later missmaches. I find it very error-proof and convinient to use in the way I develop my project. I hope you like it too. 
