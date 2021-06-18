@@ -22,6 +22,7 @@ namespace AlchemyBow.Localizations
         /// </summary>
         public readonly LocalizatorConfig config;
         private readonly string[][] localizations;
+        private readonly Dictionary<string, int> stringMap;
 
         private int activeLanguage;
 
@@ -34,12 +35,13 @@ namespace AlchemyBow.Localizations
             this.config = config;
             this.localizations = new string[config.NumberOfGroups][];
             this.activeLanguage = -1;
+            this.stringMap = new Dictionary<string, int>();
         }
 
         /// <summary>
-        /// The index of the currently used language.
+        /// Gets the index of the currently used language.
         /// </summary>
-        /// <returns>The index of the active language if it is loaded; otherwise, -1.</returns>
+        /// <returns>The index of the currently used language if any is loaded; otherwise, -1.</returns>
         public int ActiveLanguage 
         { 
             get => activeLanguage; 
@@ -78,41 +80,46 @@ namespace AlchemyBow.Localizations
         }
 
         /// <summary>
-        /// Begins the process of loading the specified language and returns a handle.
+        /// Gets a localization under the specyfic string key.
         /// </summary>
-        /// <param name="languageIndex">An index of the language to load.</param>
-        /// <returns>A handle of the loading process.</returns>
-        /// <remarks>Loads all groups.</remarks>
-        public LocalizatorRequest SetLanguage(int languageIndex)
+        /// <param name="key">The key of localization. E.g. Group.Key</param>
+        /// <returns>A localization under the specyfic key.</returns>
+        /// <remarks>This overload only work if the string-key access was anabled during loading.</remarks>
+        public string this[string key]
         {
-            Clear();
-            ThrowIfLanguageNotSupported(languageIndex);
-            var groups = new HashSet<int>();
-            int numberOfGroups = config.NumberOfGroups;
-            for (int i = 0; i < numberOfGroups; i++)
+            get
             {
-                groups.Add(i);
+                if(stringMap.TryGetValue(key, out int index))
+                {
+                    return this[index];
+                }
+                else
+                {
+                    return key + " (not string maped)";
+                }
             }
-            
-            return LocalizatorRequest.RequestLocalizations(languageIndex, groups, config, localizations,
-                () => ActiveLanguage = languageIndex);
         }
 
         /// <summary>
         /// Begins the process of loading the specified language and returns a handle.
         /// </summary>
         /// <param name="languageIndex">An index of the language to load.</param>
-        /// <param name="groups">Indexes of the groups to load.</param>
+        /// <param name="settings">A settings object that defines what and how to load.</param>
         /// <returns>A handle of the loading process.</returns>
-        /// <remarks>Loads specific groups only.</remarks>
-        public LocalizatorRequest SetLanguageWithExactGroups(int languageIndex, params int[] groups)
+        /// <remarks>If settings object is not passed, all groups are loaded with disabled string-key access.</remarks>
+        public LocalizatorRequest SetLanguage(int languageIndex, LocalizatorRequestSettings settings = null)
         {
             Clear();
             ThrowIfLanguageNotSupported(languageIndex);
-            ThrowIfGroupNotSpecyfied(groups);
-            string language = config.SupportedLanguages[languageIndex];
-            return LocalizatorRequest.RequestLocalizations(languageIndex, new HashSet<int>(groups), config, localizations, 
-                () => ActiveLanguage = languageIndex);
+            
+            if(settings == null)
+            {
+                settings = new LocalizatorRequestSettings(this);
+                settings.AddAllGroupsToLoad();
+            }
+            
+            return LocalizatorRequest.RequestLocalizations(languageIndex, settings, 
+                localizations, stringMap, () => ActiveLanguage = languageIndex);
         }
 
         /// <summary>
@@ -127,6 +134,7 @@ namespace AlchemyBow.Localizations
             {
                 localizations[i] = null;
             }
+            stringMap.Clear();
         }
 
         private void OnValidLocalizationsSet()
@@ -143,13 +151,6 @@ namespace AlchemyBow.Localizations
                 throw new System.Exception($"The language index '{languageIndex}' is not supported.");
             }
         }
-        private void ThrowIfGroupNotSpecyfied(int[] groups)
-        {
-            if (groups == null || groups.Length == 0)
-            {
-                throw new System.Exception("Groups must be specified.");
-            }
-        } 
         #endregion
     } 
 }

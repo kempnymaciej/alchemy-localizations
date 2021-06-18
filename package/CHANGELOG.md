@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.1] - 2021-06-18
+* Added option to access localizations with string keys. 
+* Simplified loading process.
+
 ## [0.2.1] - 2021-06-15
 The use of the "Addressables" package was replaced by Resources.
 
