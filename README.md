@@ -100,7 +100,6 @@ Debug.Log(localizator[Keys.General.MessageX(1)]);
 Debug.Log(localizator[Keys.General.MessageX(99)]);
 ```
 
-## String access
 Sometimes you may need to access localizations with string keys. The example below presents how to do it:
 ```csharp
 private IEnumerator Example()
