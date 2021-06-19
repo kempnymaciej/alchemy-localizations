@@ -136,5 +136,20 @@ namespace AlchemyBow.Localizations
             }
             return 0;
         }
+
+        /// <summary>
+        /// Gets an index of the first localization in the specific group.
+        /// </summary>
+        /// <param name="groupIndex"></param>
+        /// <returns>An index of the first localization in the group.</returns>
+        public int GetGroupFirstIndex(int groupIndex)
+        {
+            int result = 0;
+            for (int i = 0; i < groupIndex; i++)
+            {
+                result += GetGroupSize(i);
+            }
+            return result;
+        }
     } 
 }
