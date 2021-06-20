@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0] - 2021-06-20
+* Sheet columns no longer need to be in a specific order.
+* Non-language columns can be added to sheets.
+* Removed static accessors (string-keys are more secure and provides similar functionality).
+* Updated default settings values.
+* Improved synchronization logs.
+* Fixed an error that occurred after using a line break in sheets.
+
 ## [0.3.2] - 2021-06-20
 Improved validation of the localizations settings.
 

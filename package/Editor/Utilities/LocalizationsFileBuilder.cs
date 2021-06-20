@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace AlchemyBow.Localizations.Editor.Utilities
 {
@@ -36,25 +35,17 @@ namespace AlchemyBow.Localizations.Editor.Utilities
             int numberOfGroups = groups.Count;
             for (int i = 0; i < numberOfGroups; i++)
             {
-                BeginClass(groups[i].GroupName);
-                var keys = groups[i].GroupKeys;
-                int numberOfKeys = keys.Count;
+                BeginClass(groups[i].groupName);
+                int numberOfKeys = groups[i].NumberOfKeys;
                 Field("_GroupIndex", i);
                 Field("_FirstKey", groupStartIndex);
                 Field("_LastKey", groupStartIndex + numberOfKeys - 1);
 
                 for (int j = 0; j < numberOfKeys; j++)
                 {
-                    Field(keys[j], groupStartIndex + j);
+                    Field(groups[i].GetKey(j), groupStartIndex + j);
                 }
-                var indexedSubgroups = FindIndexedSubgroups(keys);
-                if (indexedSubgroups.Count > 0)
-                {
-                    foreach (var indexedSubgroup in indexedSubgroups)
-                    {
-                        SubgroupMethod(keys, indexedSubgroup);
-                    }
-                }
+
                 groupStartIndex += numberOfKeys;
                 EndClass();
             }
@@ -64,36 +55,10 @@ namespace AlchemyBow.Localizations.Editor.Utilities
             return result;
         }
 
-        private List<IndexedSubgroup> FindIndexedSubgroups(IReadOnlyList<string> groupKeys)
-        {
-            var result = new List<IndexedSubgroup>();
-            int numberOfGroupKeys = groupKeys.Count;
-            var regex = CreateFindNumberRegex();
-            for (int i = 0; i < numberOfGroupKeys; i++)
-            {
-                if (regex.IsMatch(groupKeys[i]))
-                {
-                    string subgroupIndex = regex.Match(groupKeys[i]).Value;
-                    var subgroupName = regex.Replace(groupKeys[i], "X");
-                    var subgroup = result.Find(r => r.subgroupName == subgroupName);
-                    if (subgroup == null)
-                    {
-                        subgroup = new IndexedSubgroup(subgroupName);
-                        result.Add(subgroup);
-                    }
-                    subgroup.Add(i, int.Parse(subgroupIndex));
-                }
-            }
-            return result;
-        }
-
-        private static Regex CreateFindNumberRegex() => new Regex(@"\d+");
-
         private void Line(string value)
         {
             result += $"{indent}{value}\n";
         }
-
         private void Usings()
         {
             Line("using AlchemyBow.Localizations;");
@@ -126,30 +91,6 @@ namespace AlchemyBow.Localizations.Editor.Utilities
             Line($"public const int {fieldName} = {value};");
         }
 
-        private void SubgroupMethod(IReadOnlyList<string> groupKeys, IndexedSubgroup indexedSubgroup)
-        {
-            Line($"public static int {indexedSubgroup.subgroupName}(int index)");
-            Line("{");
-            IndentLevel++;
-
-            Line("switch(index)");
-            Line("{");
-            IndentLevel++;
-            int numberOfElements = indexedSubgroup.subgroupIndexes.Count;
-            for (int i = 0; i < numberOfElements; i++)
-            {
-                Line($"case {indexedSubgroup.subgroupIndexes[i]}: return {groupKeys[indexedSubgroup.groupIndexes[i]]};");
-            }
-            IndentLevel--;
-            Line("}");
-
-            Line("UnityEngine.Debug.LogError($\"Since the key({index}) does not exist, the default key will be used.\");");
-            Line($"return {groupKeys[indexedSubgroup.groupIndexes[0]]};");
-
-            IndentLevel--;
-            Line("}");
-        }
-
         private void ConfigMethod(IReadOnlyList<string> languages, IReadOnlyList<KeyGroup> groups)
         {
             Line($"public static LocalizatorConfig GetLocalizatorConfig()");
@@ -169,11 +110,11 @@ namespace AlchemyBow.Localizations.Editor.Utilities
             string groupNames = "{";
             for (int i = 0; i < numberOfGroups - 1; i++)
             {
-                groupSizes += groups[i].GroupKeys.Count + ", ";
-                groupNames += $"\"{groups[i].GroupName}\", ";
+                groupSizes += groups[i].NumberOfKeys + ", ";
+                groupNames += $"\"{groups[i].groupName}\", ";
             }
-            groupSizes += groups[numberOfGroups - 1].GroupKeys.Count + "}";
-            groupNames += $"\"{groups[numberOfGroups - 1].GroupName}\"" + "}";
+            groupSizes += groups[numberOfGroups - 1].NumberOfKeys + "}";
+            groupNames += $"\"{groups[numberOfGroups - 1].groupName}\"" + "}";
 
             Line($"return new LocalizatorConfig(");
             IndentLevel++;

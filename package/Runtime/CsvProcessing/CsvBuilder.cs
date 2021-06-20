@@ -43,7 +43,7 @@ namespace AlchemyBow.Localizations.CsvProcessing
         public void Clear() => builder.Clear();
 
         /// <summary>
-        /// Converts the value of a builder to <code>string</code>.
+        /// Converts the value of a builder to string.
         /// </summary>
         /// <returns>A formatted representation of added rows.</returns>
         public override string ToString()
@@ -70,7 +70,8 @@ namespace AlchemyBow.Localizations.CsvProcessing
             }
 
             bool quote = false;
-            if (cell.Contains(Delimiter))
+            var endLine = EndLine.ToString();
+            if (cell.Contains(Delimiter) || cell.Contains(endLine))
             {
                 quote = true;
             }

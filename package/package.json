@@ -1,6 +1,6 @@
 {
   "name": "com.alchemybow.alchemy-localizations",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "displayName": "AlchemyLocalizations",
   "description": "This package implements a localizations system.",
   "unity": "2018.4",

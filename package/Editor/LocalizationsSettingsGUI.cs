@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using AlchemyBow.Localizations.CsvProcessing;
@@ -55,12 +54,12 @@ namespace AlchemyBow.Localizations.Editor
                     try
                     {
                         Synchronize();
-                        Debug.Log("Localizations synchronization finished with result: Success.");
+                        Debug.Log("Localizations synchronization finished with result: <color=yellow>Success</color>.");
                     }
                     catch (System.Exception e)
                     {
                         Debug.LogError(e.Message);
-                        Debug.Log("Localizations synchronization finished with result: Failed.");
+                        Debug.Log("Localizations synchronization finished with result: <color=red>Failure</color>.");
                     }
                 }
             }
@@ -123,46 +122,15 @@ namespace AlchemyBow.Localizations.Editor
 
             int numberOfGroups = settings.GroupNames.Count;
             var groups = new KeyGroup[numberOfGroups];
-
-            var csvBuilder = new CsvBuilder();
-            var fileBuilder = new LocalizationsFileBuilder();
-            var csvReader = new CsvReader();
-
             for (int i = 0; i < numberOfGroups; i++)
             {
-                string groupName = settings.GroupNames[i];
-                using (var reader = new StringReader(sheetsContent[i]))
-                {
-                    var row = new List<string>();
-                    csvReader.ReadRow(row, reader);
-                    ValidateGroupHeadRow(groupName, row, settings.Languages);
-
-                    var keys = new List<string>();
-                    while (true)
-                    {
-                        row.Clear();
-                        if (csvReader.ReadRow(row, reader) > 0)
-                        {
-                            csvBuilder.AddRow(row);
-                            keys.Add(row[0]);
-                            ValidateRow(groupName, keys.Count - 1, row, settings.Languages);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    var groupKeys = keys.ToArray();
-                    ValidateGroupContentKeys(groupName, groupKeys);
-                    groups[i] = new KeyGroup(groupName, groupKeys);
-                }
+                groups[i] = KeyGroup.FromSheetContent(settings.GroupNames[i], sheetsContent[i], settings);
             }
 
-            settings.SaveLocalizationsFile(csvBuilder.ToString());
-            File.WriteAllText(settings.ClassProjectRelativePath, fileBuilder.Build(settings, groups));
+            SaveCsvFile(groups, settings);
+            SaveCsFile(groups, settings);
             AssetDatabase.Refresh();
         }
-
 
         private static string[] LoadSheetsContent(LocalizationsSettings settings)
         {
@@ -213,83 +181,25 @@ namespace AlchemyBow.Localizations.Editor
             return string.Format(SheetUrlPattern, spreadsheetId, sheetName);
         }
 
-        private static void ValidateGroupHeadRow(string groupName, IReadOnlyList<string> headRow, IReadOnlyList<string> languages)
+        private static void SaveCsvFile(KeyGroup[] groups, LocalizationsSettings settings)
         {
-            string errorLog = "";
-            int numberOfLanguages = languages.Count;
-            int numberOfColumns = headRow.Count;
-            if (numberOfColumns <= numberOfLanguages)
+            var csvBuilder = new CsvBuilder();
+            foreach (var group in groups)
             {
-                errorLog += $"The group has unexpected number of columns({numberOfColumns}/{numberOfLanguages + 1}).\n";
-            }
-            for (int i = 0; i < numberOfLanguages; i++)
-            {
-                if (languages[i] != headRow[i + 1])
+                int numberOfKeys = group.NumberOfKeys;
+                for (int i = 0; i < numberOfKeys; i++)
                 {
-                    errorLog += $"The column head at index {i + 1} should be {languages[i]}.\n";
+                    csvBuilder.AddRow(group.GetRow(i));
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(errorLog))
-            {
-
-                throw new System.Exception($"The group ({groupName}) contains errors in the head row: \n{errorLog}");
-            }
-            return;
+            settings.SaveLocalizationsFile(csvBuilder.ToString());
         }
-        
-        private static void ValidateRow(string groupName, int rowIndex, IReadOnlyList<string> row, IReadOnlyList<string> languages)
-        {
-            string warningLog = "";
-            int numberOfItems = row.Count;
-            if (numberOfItems <= languages.Count)
-            {
-                warningLog += "The row has too few columns.";
-            }
-            for (int i = 0; i < numberOfItems; i++)
-            {
-                if (string.IsNullOrWhiteSpace(row[i]))
-                {
-                    warningLog += $"The item at index {i} is null or empty.";
-                }
-            }
 
-            if (!string.IsNullOrWhiteSpace(warningLog))
-            {
-                Debug.LogWarning($"The row {groupName}[{rowIndex}] contains warnings: \n{warningLog}");
-            }
-        }
-        
-        private static void ValidateGroupContentKeys(string groupName, IReadOnlyList<string> keys)
+        private static void SaveCsFile(KeyGroup[] groups, LocalizationsSettings settings)
         {
-            string errorLog = "";
-            int numberOfKeys = keys.Count;
-            if (numberOfKeys == 0)
-            {
-                errorLog += "The group has no keys.\n";
-            }
-            var uniqueKeys = new HashSet<string>();
-            for (int i = 0; i < numberOfKeys; i++)
-            {
-                string key = keys[i];
-                if (string.IsNullOrWhiteSpace(key))
-                {
-                    errorLog += $"The key at index {i} is null or white space.\n";
-                }
-                else if (key.Trim().Length != key.Length)
-                {
-                    errorLog += $"The key at index {i} contains white spaces.\n";
-                }
-                else if (!uniqueKeys.Add(key))
-                {
-                    errorLog += $"The key at index {i} is a duplicate.\n";
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(errorLog))
-            {
-                throw new System.Exception($"Failed to decode the group '{groupName}' keys: \n{errorLog}");
-            }
+            var fileBuilder = new LocalizationsFileBuilder();
+            File.WriteAllText(settings.ClassProjectRelativePath, fileBuilder.Build(settings, groups));
         }
         #endregion
     }
