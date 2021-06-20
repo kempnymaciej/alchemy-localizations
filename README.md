@@ -30,7 +30,7 @@ Some versions of Unity may have trouble downloading the git package with a speci
 Rulse to follow:
 * Keep the keys in the first column.
 * Keep the languages in the first row.
-* The order of language columns is not important.
+* The order of the language columns is not important.
 * You can add additional non-language columns (they won't be downloaded).
 
 ### Synchronize in Unity
