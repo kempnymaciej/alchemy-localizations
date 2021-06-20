@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.3.2] - 2021-06-20
+Improved validation of the localizations settings.
+
 ## [0.3.1] - 2021-06-18
 * Added option to access localizations with string keys. 
 * Simplified loading process.
