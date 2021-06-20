@@ -13,19 +13,25 @@ The AlchemyLocalizations package is currently in an early beta stage. It is func
 ## Installation via PackageManager
 1. Open the package manager window.
 2. Click the plus button and select "Add package from git URL...".
-3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.3.2`.
+3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.4.0`.
 
 Some versions of Unity may have trouble downloading the git package with a specific tag ([see](https://issuetracker.unity3d.com/issues/package-resolution-error-when-using-a-git-dependency-referencing-an-annotated-tag-in-its-git-url)). In this case, clone the repository and copy the contents of the package directory to your project.
 
 ### Prepare sheets
 1. Create a Google Sheets project, name it and set it **public to read**.
 2. Create and name sheets. For example: `General`, `Tips`, ...
-3. Fill sheets like this (languages in the first row; keys in the first column):
+3. Fill sheets like this:
 
 | Keys          | English         | Polish       |
 | :---:         | :---:           | :---:        |
 | GoodNight     | Good night!     | Dobranoc!    |
 | GoodMorning   | Good morning!   | Dzień dobry! |
+
+Rulse to follow:
+* Keep the keys in the first column.
+* Keep the languages in the first row.
+* The order of language columns is not important.
+* You can add additional non-language columns (they won't be downloaded).
 
 ### Synchronize in Unity
 1. In the Unity, click Window/AlchemyBow/Localizations/Settings.
@@ -86,15 +92,6 @@ You can also access the entire group:
 Debug.Log(localizator[Keys.General._FirstKey]);
 Debug.Log(localizator[Keys.General._LastKey]);
 Debug.Log(localizator[Random.Range(Keys.General._FirstKey, Keys.General._LastKey + 1)]);
-```
-
-Additionally, if the keys in the group contain numbers, static accessors are generated:
-```csharp
-Debug.Log(localizator[Keys.General.Message1]);
-Debug.Log(localizator[Keys.General.Message99]);
-// ==
-Debug.Log(localizator[Keys.General.MessageX(1)]);
-Debug.Log(localizator[Keys.General.MessageX(99)]);
 ```
 
 Sometimes you may need to access localizations with string keys. The example below presents how to do it:
