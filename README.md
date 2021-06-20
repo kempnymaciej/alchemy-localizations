@@ -9,14 +9,11 @@ AlchemyLocalizations is a personal project that implements a localizations syste
 
 #### Early beta NOTE!
 The AlchemyLocalizations package is currently in an early beta stage. It is functional, but sometimes it may not work as intended and may be missing some features.
-In the near future I will be working on the following:
-* Documentation and tutorials.
-* Better validation.
 
 ## Installation via PackageManager
 1. Open the package manager window.
 2. Click the plus button and select "Add package from git URL...".
-3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.3.1`.
+3. Paste the link: `https://github.com/kempnymaciej/alchemy-localizations.git?path=/package#v0.3.2`.
 
 Some versions of Unity may have trouble downloading the git package with a specific tag ([see](https://issuetracker.unity3d.com/issues/package-resolution-error-when-using-a-git-dependency-referencing-an-annotated-tag-in-its-git-url)). In this case, clone the repository and copy the contents of the package directory to your project.
 

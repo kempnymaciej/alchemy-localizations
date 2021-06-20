@@ -31,6 +31,8 @@ namespace AlchemyBow.Localizations.Editor
         public string SpreadsheetId => spreadsheetId;
         public string ClassName => className;
         public string ClassNamespaceName => classNamespaceName;
+
+        public string ClassFolderPath => classFolderPath;
         public string ClassProjectRelativePath => Path.Combine(classFolderPath, className + ".cs");
 
         public IReadOnlyList<string> Languages => languages;

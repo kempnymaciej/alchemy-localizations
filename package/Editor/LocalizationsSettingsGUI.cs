@@ -14,6 +14,7 @@ namespace AlchemyBow.Localizations.Editor
 
         private readonly LocalizationsSettings settings;
         private readonly SerializedObject serializedObject;
+        private readonly SettingsValidator settingsValidator;
 
         private readonly SerializedProperty spreadsheetIdProp;
         private readonly SerializedProperty classNameProp;
@@ -25,6 +26,7 @@ namespace AlchemyBow.Localizations.Editor
         public LocalizationsSettingsGUI(LocalizationsSettings settings)
         {
             this.settings = settings;
+            this.settingsValidator = new SettingsValidator();
             this.serializedObject = new SerializedObject(settings);
 
             spreadsheetIdProp = serializedObject.FindProperty("spreadsheetId");
@@ -39,7 +41,14 @@ namespace AlchemyBow.Localizations.Editor
         public void OnGUI()
         {
             DrawFieldsGUI();
-            if (ValidateSettingsGUI())
+            if (settingsValidator.HasErrors)
+            {
+                foreach (var raport in settingsValidator.FailureRaports)
+                {
+                    EditorGUILayout.HelpBox(raport, MessageType.Error);
+                }
+            }
+            else 
             {
                 if (GUILayout.Button("Synchronize Localizations"))
                 {
@@ -74,6 +83,7 @@ namespace AlchemyBow.Localizations.Editor
             EditorGUILayout.PropertyField(groupNamesProp);
 
             serializedObject.ApplyModifiedProperties();
+            settingsValidator.UpdateRaport(settings);
         }
         private void DrawSelectClassFolderPathGUI()
         {
@@ -103,85 +113,6 @@ namespace AlchemyBow.Localizations.Editor
                     Debug.LogError("Select path in the Assets folder.");
                 }
             }
-        }
-
-        private bool ValidateSettingsGUI()
-        {
-            bool result = true;
-            result = ValidateClassNamespaceNameGUI() && result;
-            result = ValidateClassNameGUI() && result;
-            result = ValidateClassFolderPathGUI() && result;
-            result = ValidateLanguagesGUI() && result;
-            result = ValidateGroupsGUI() && result;
-            return result;
-        }
-        private bool ValidateClassFolderPathGUI()
-        {
-            bool isCorrent = true;
-            string path = classFolderPathProp.stringValue;
-            if (path == null)
-            {
-                EditorGUILayout.HelpBox("The class folder path must be selected.", MessageType.Error);
-                isCorrent = false;
-            }
-            else if (path.Length != 0 && !AssetDatabase.IsValidFolder(path))
-            {
-                EditorGUILayout.HelpBox("The class folder path must point to valid directory", MessageType.Error);
-                isCorrent = false;
-            }
-            return isCorrent;
-        }
-        private bool ValidateClassNamespaceNameGUI()
-        {
-            bool isCorrect = true;
-            string classNamespaceName = classNamespaceNameProp.stringValue;
-            if (string.IsNullOrWhiteSpace(classNamespaceName))
-            {
-                isCorrect = false;
-                EditorGUILayout.HelpBox("The class namespace name must be non-empty.", MessageType.Error);
-            }
-            else if(classNamespaceName.Trim().Length != classNamespaceName.Length)
-            {
-                isCorrect = false;
-                EditorGUILayout.HelpBox("The class namespace name cannot contain white spaces.", MessageType.Error);
-            }
-            return isCorrect;
-        }
-        private bool ValidateClassNameGUI()
-        {
-            bool isCorrect = true;
-            string className = classNameProp.stringValue;
-            if (string.IsNullOrWhiteSpace(className))
-            {
-                isCorrect = false;
-                EditorGUILayout.HelpBox("The class name must be non-empty.", MessageType.Error);
-            }
-            else if (className.Trim().Length != className.Length)
-            {
-                isCorrect = false;
-                EditorGUILayout.HelpBox("The class name cannot contain white spaces.", MessageType.Error);
-            }
-            return isCorrect;
-        }
-        private bool ValidateLanguagesGUI()
-        {
-            bool isCorrect = true;
-            if (languagesProp.arraySize == 0)
-            {
-                isCorrect = false;
-                EditorGUILayout.HelpBox("Enter at least one language.", MessageType.Error);
-            }
-            return isCorrect;
-        }
-        private bool ValidateGroupsGUI()
-        {
-            bool isCorrect = true;
-            if (groupNamesProp.arraySize == 0)
-            {
-                isCorrect = false;
-                EditorGUILayout.HelpBox("Enter at least one group.", MessageType.Error);
-            }
-            return isCorrect;
         }
         #endregion
 
