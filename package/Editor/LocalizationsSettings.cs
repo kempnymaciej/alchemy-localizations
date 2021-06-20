@@ -20,9 +20,9 @@ namespace AlchemyBow.Localizations.Editor
         [SerializeField]
         private string className = "Keys";
         [SerializeField]
-        private string classNamespaceName = "AlchemyBow.Localizations";
+        private string classNamespaceName = "";
         [SerializeField]
-        private string classFolderPath = "Assets";
+        private string classFolderPath = "";
         [SerializeField]
         private string[] languages = null;
         [SerializeField]

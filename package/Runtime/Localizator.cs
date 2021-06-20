@@ -95,7 +95,7 @@ namespace AlchemyBow.Localizations
                 }
                 else
                 {
-                    return key + " (not string maped)";
+                    return key + " (NOT_MAPED)";
                 }
             }
         }

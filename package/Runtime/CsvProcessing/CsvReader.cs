@@ -22,12 +22,12 @@ namespace AlchemyBow.Localizations.CsvProcessing
         }
 
         /// <summary>
-        /// Reads a row of data from the stream and adds it to the <code>row</code> list.
+        /// Reads a row of data from the stream and adds it to the row list.
         /// </summary>
         /// <param name="row">The list to store results.</param>
         /// <param name="reader">The source stream.</param>
         /// <returns>The number of added cells.</returns>
-        /// <remarks>The <code>row</code> list is not cleared.</remarks>
+        /// <remarks>The row list is not cleared.</remarks>
         public int ReadRow(List<string> row, StringReader reader)
         {
             int readCells = 0;
@@ -49,7 +49,7 @@ namespace AlchemyBow.Localizations.CsvProcessing
         /// </summary>
         /// <param name="reader">The source stream.</param>
         /// <param name="columnIndex">The index of the column to read.</param>
-        /// <returns>The value of the cell if it exists; otherwise, <code>null</code>.</returns>
+        /// <returns>The value of the cell if it exists; otherwise, null.</returns>
         public string ReadRow(StringReader reader, int columnIndex)
         {
             string result = null;
